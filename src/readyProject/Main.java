@@ -10,7 +10,7 @@ public class Main {
         int sizeBoard = 5;
         int step = 0;
 
-        Person person = new Person(sizeBoard); // генерируем персонажа на основе тех данных, которые мы написали в классе Person
+        Person person = new Person(sizeBoard);
 
         Random random = new Random();
         int castleX = 1 + random.nextInt(sizeBoard);
@@ -22,14 +22,14 @@ public class Main {
         String[][] board = new String[sizeBoard][sizeBoard];
         for (int y = 1; y <= sizeBoard; y++) {
             for (int x = 1; x <= sizeBoard; x++) {
-                board[y - 1][x - 1] = "  "; //заполняем клетки нашего поля пробелами
+                board[y - 1][x - 1] = "  ";
             }
         }
-        int countMonster = sizeBoard * sizeBoard - sizeBoard - 5;// вычисляет максимальное кол-во монстров, которое можно разместить на поле
-        Monster[] monsters = new Monster[countMonster]; //создаем массив monsters, в котором будет ровно countMonster ячеек.
+        int countMonster = sizeBoard * sizeBoard - sizeBoard - 5;
+        Monster[] monsters = new Monster[countMonster];
         int count = 0;
 
-        while (count < countMonster) { //случайная расстановка монстров на поле
+        while (count < countMonster) {
             Monster monster;
 
             if (random.nextBoolean()) {
@@ -37,7 +37,7 @@ public class Main {
             } else {
                 monster = new BigMonster(sizeBoard);
             }
-            int row = monster.getY() - 1; //игровые координаты в индексы массива
+            int row = monster.getY() - 1;
             int column = monster.getX() - 1;
 
             if (board[row][column].equals("  ")) {
@@ -46,32 +46,32 @@ public class Main {
                 count++;
             }
         }
-        board[castleY - 1][castleX - 1] = castle;//генерируем замок
+        board[castleY - 1][castleX - 1] = castle;
         board[rockY - 1][rockX - 1] = rock;
 
         Helper helper;
         do {
             helper = new Helper(sizeBoard);
-        }while(!board[helper.getB()-1][helper.getA()-1].equals("  ")); //гарантия, что помощник появится строго в пустой клетке
-        board[helper.getB() - 1][helper.getA() - 1] = helper.getHelper(); // генерируем помощника
+        }while(!board[helper.getB()-1][helper.getA()-1].equals("  "));
+        board[helper.getB() - 1][helper.getA() - 1] = helper.getHelper();
 
         System.out.println("Привет! Небольшой справочник для понимания, что есть что перед тем, как начнешь играть:"
                 +"\n1.🏰 - замок, придешь сюда - победишь"
                 +"\n2.🧙 - главный герой нашей игры"
                 +"\n3.🧟, 🧌 - монстры, их надо побеждать если что^^"
                 +"\n4.👸 - твой помощник, если решишь его задачу, то получишь доп. жизнь!");
-        System.out.println("Ты готов начать играть в игру? (Напиши: ДА или НЕТ)"); //предложение начать игру
+        System.out.println("Ты готов начать играть в игру? (Напиши: ДА или НЕТ)");
 
-        Scanner scanner = new Scanner(System.in); //создание сканера для прочитки нашего ответа
+        Scanner scanner = new Scanner(System.in);
         String answer = scanner.nextLine();
 
         switch (answer) {
             case "ДА":
                 System.out.println("Выбери сложность игры (от 1 до 5):");
-                int difficultGame = scanner.nextInt(); //выбираем сложность
+                int difficultGame = scanner.nextInt();
 
                 while (true) { //пока у нас все ок и все истинно
-                    board[person.getY() - 1][person.getX() - 1] = person.getImage(); // генерируем героя
+                    board[person.getY() - 1][person.getX() - 1] = person.getImage();
                     outputBoard(board, person.getLive());
 
                     System.out.println("Введите, куда будет ходить персонаж "
@@ -83,12 +83,12 @@ public class Main {
                     int y = scanner.nextInt();
                     System.out.println(x + ", " + y);
 
-                    if (person.isMoveCorrect(x, y)) { // проверка хождения по диагонали
-                        if (board[y - 1][x - 1].equals("  ")) { //если игрок ступил на пустую клеточку
+                    if (person.isMoveCorrect(x, y)) {
+                        if (board[y - 1][x - 1].equals("  ")) {
 
-                            board[person.getY() - 1][person.getX() - 1] = " "; //на старом месте записывается пустота
-                            person.move(x, y); //координаты меняются на новые
-                            step++; //делаем один шаг
+                            board[person.getY() - 1][person.getX() - 1] = " ";
+                            person.move(x, y);
+                            step++;
 
                             System.out.println("Ход корректный; новые координаты: "
                                     + person.getX() + ", " + person.getY()
@@ -99,18 +99,18 @@ public class Main {
                             break;
                         }
 
-                        else if (board[y - 1][x - 1].equals(helper.getHelper())) { //если игрок попал на помощника
+                        else if (board[y - 1][x - 1].equals(helper.getHelper())) {
                             if(helper.taskHelper(difficultGame)){
                                 person.upLive();
-                                board[person.getY() - 1][person.getX() - 1] = "  "; //на старом месте записывается пустота
-                                person.move(x, y); //координаты меняются на новые
+                                board[person.getY() - 1][person.getX() - 1] = "  ";
+                                person.move(x, y);
                                 step++;
                             }
                             else{person.downLive();}
                         } else if (board[y - 1][x - 1].equals(rock)) {
                             System.out.println("Ты на камень наткнулся, осторожнее");
                         } else {
-                            for (Monster monster : monsters) {// Проверяем каждого монстра в массиве
+                            for (Monster monster : monsters) {
                                 if (monster.conflictPerson(x, y)) {
                                     if (monster.taskMonster(difficultGame)) {
                                         board[person.getY() - 1][person.getX() - 1] = "  ";
@@ -150,7 +150,7 @@ public class Main {
         for (String[] row : board) {
             System.out.println(wall);
             for (String col : row) {
-                System.out.printf("%s %2s ", leftBlock, col); //форматирование вывода в консоль (s - string; % - спецификатор; 2 - мин ширина поля)
+                System.out.printf("%s %2s ", leftBlock, col);
             }
             System.out.println(leftBlock);
         }
